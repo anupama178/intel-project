@@ -1,0 +1,36 @@
+import psutil
+import time
+def get_tdp_telemetry():
+    cpu_percent = psutil.cpu_percent(interval=1)  # CPU usage percentage
+    return {
+        'cpu_percent': cpu_percent
+    }
+def get_nic_telemetry():
+    return {
+        'network_stats': {
+            'incoming_bytes': psutil.net_io_counters().bytes_recv,
+            'outgoing_bytes': psutil.net_io_counters().bytes_sent
+        }
+    }
+def save_telemetry_to_file(tdp_data, nic_data):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    with open("telemetry_data.txt", "a") as file:
+        file.write(f"Timestamp: {timestamp}\n")
+        file.write(f"TDP Telemetry: {tdp_data}\n")
+        file.write(f"NIC Telemetry: {nic_data}\n\n")
+
+def main():
+    while True:
+        tdp_data = get_tdp_telemetry()
+        nic_data = get_nic_telemetry()
+
+        print(f"TDP Telemetry: {tdp_data}")
+        print(f"NIC Telemetry: {nic_data}")
+
+        save_telemetry_to_file(tdp_data, nic_data)
+
+        time.sleep(10)
+
+if __name__ == "__main__":
+    main()
+
